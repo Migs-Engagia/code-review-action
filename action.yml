@@ -1,13 +1,16 @@
-name: 'Code Reviewer'
-description: 'Greet someone and record the time'
+name: "Claude Code Review"
+description: "Use Claude (Anthropic) to review code changes in a PR"
+author: "Your Name"
 inputs:
-  who-to-greet:  # id of input
-    description: 'Who to greet'
+  anthropic-api-key:
+    description: "Your Anthropic API key"
     required: true
-    default: 'World'
 outputs:
-  time: # id of output
-    description: 'The time we greeted you'
+  claude-review:
+    description: "Response from Claude"
 runs:
-  using: 'node20'
-  main: 'index.js'
+  using: "node20"
+  main: "index.js"
+branding:
+  icon: "eye"
+  color: "gray-dark"
