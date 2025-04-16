@@ -96,9 +96,15 @@ async function run() {
       }
     });
 
-    const prompt = `You are a senior software engineer. 
-                  Please review the following code diff and provide suggestions or improvements:\n\n${diff}
-                  At the end of review, add a summary (either pass or fail), and list all files with issue`;
+    const prompt = `You are a senior software engineer reviewing a code diff.
+            Please analyze the following diff and provide clear, constructive feedback, including suggestions for improvements, best practices, and potential issues.
+
+            Diff:
+            ${diff}
+
+            After your review, include:
+            1. A summary judgment: **Pass** (no major issues) or **Fail** (requires changes)
+            2. A list of all affected files that contain issues.`;
 
     const chatGPTResponse = await callChatGPT(apiKey, prompt);
 
