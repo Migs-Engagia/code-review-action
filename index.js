@@ -49,6 +49,42 @@ async function run() {
     const base = context.payload.pull_request.base.sha;
     const head = context.payload.pull_request.head.sha;
 
+     // Get list of changed files
+     const { data: compare } = await octokit.rest.repos.compareCommits({
+      owner,
+      repo,
+      base,
+      head
+    });
+
+    const changedFiles = compare.files.map(file => file.filename);
+
+    // Define excluded paths
+    const excludedPaths = [
+      "README.md",
+      ".github/",
+    ];
+
+    const isExcluded = (file) =>
+      excludedPaths.some(excluded =>
+        file === excluded || file.startsWith(excluded)
+      );
+
+    const filteredFiles = changedFiles.filter(file => !isExcluded(file));
+
+    if (filteredFiles.length === 0) {
+      core.info("All changed files are excluded. Skipping ChatGPT review.");
+
+      await octokit.rest.issues.createComment({
+        owner,
+        repo,
+        issue_number: pull_number,
+        body: `✅ **No code review needed**\n\nAll changed files are in excluded paths, so no review was performed.`
+      });
+
+      return;
+    }
+
     // Get the diff between base and head
     const { data: diff } = await octokit.request("GET /repos/{owner}/{repo}/compare/{base}...{head}", {
       owner,
@@ -60,7 +96,9 @@ async function run() {
       }
     });
 
-    const prompt = `You are a senior software engineer. Please review the following code diff and provide suggestions or improvements:\n\n${diff}`;
+    const prompt = `You are a senior software engineer. 
+                  Please review the following code diff and provide suggestions or improvements:\n\n${diff}
+                  At the end of review, add a summary (either pass or fail), and list all files with issue`;
 
     const chatGPTResponse = await callChatGPT(apiKey, prompt);
 
