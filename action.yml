@@ -5,5 +5,5 @@ inputs:
     required: true
     description: "ChatGPT API key"
 runs:
-  using: "node18"
+  using: "node16" # Change this to node12, node16, or node20
   main: "dist/index.js"
