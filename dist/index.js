@@ -70396,7 +70396,7 @@ const fetch = __nccwpck_require__(5376);
 async function callChatGPT(apiKey, content) {
   const fetch = (await Promise.resolve(/* import() */).then(__nccwpck_require__.bind(__nccwpck_require__, 5376))).default;
   const body = {
-    model: "gpt-4-turbo",  // Use gpt-3.5 if you want a less expensive option
+    model: "gpt-3.5-turbo",  // Use gpt-3.5 if you want a less expensive option
     messages: [
       {
         role: "user",

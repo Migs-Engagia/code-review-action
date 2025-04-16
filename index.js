@@ -5,7 +5,7 @@ const fetch = require('node-fetch');
 async function callChatGPT(apiKey, content) {
   const fetch = (await import('node-fetch')).default;
   const body = {
-    model: "gpt-4-turbo",  // Use gpt-3.5 if you want a less expensive option
+    model: "gpt-3.5-turbo",  // Use gpt-3.5 if you want a less expensive option
     messages: [
       {
         role: "user",
