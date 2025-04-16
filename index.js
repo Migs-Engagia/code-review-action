@@ -3,6 +3,7 @@ const github = require('@actions/github');
 const fetch = require('node-fetch');
 
 async function callChatGPT(apiKey, content) {
+  const fetch = (await import('node-fetch')).default;
   const body = {
     model: "gpt-4",  // Use gpt-3.5 if you want a less expensive option
     messages: [
