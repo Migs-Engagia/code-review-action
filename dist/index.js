@@ -70558,7 +70558,7 @@ async function run() {
       },
       instruction: "After reviewing the diff, respond using the following JSON format: { status: 'PASS' or 'FAIL', issues: [...], suggestedImprovements: [...] }",
       input: {
-        diff: $diff,
+        diff: diff,
       }
     };
 
