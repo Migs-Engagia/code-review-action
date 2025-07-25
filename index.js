@@ -34,6 +34,7 @@ async function callChatGPT(apiKey, content) {
   }
 
   const result = await response.json();
+  core.info("gpt response : " + result);
   return result.choices[0]?.message?.content ?? "(No response)";
 }
 
