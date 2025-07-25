@@ -180,7 +180,7 @@ async function run() {
       owner,
       repo,
       issue_number: pull_number,
-      body: `🧠 **ChatGPT Code Review (Experimental)**\n\n\`\`\`json\n${chatGPTResponse}\n\`\`\``
+      body: `🧠 **ChatGPT Code Review (Experimental)**\n\n\n${chatGPTResponse}\n`
     });
 
     if(strictMode) {
