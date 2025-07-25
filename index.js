@@ -6,6 +6,7 @@ let techStack = {
   language: "PHP 7.1 and Android Kotlin/Java",
   framework: "CakePHP 3.3 and Android SDK",
 }; //default configuration, can be overridden by user input
+let strictMode = false; // default to false, can be set by user input
 
 async function callChatGPT(apiKey, content) {
   const fetch = (await import('node-fetch')).default;
@@ -182,6 +183,16 @@ async function run() {
       body: `🧠 **ChatGPT Code Review (Experimental) **\n\n${chatGPTResponse}`
     });
 
+    if(strictMode) {
+      // If strict mode is enabled, fail the action if ChatGPT suggests issues
+      const responseJson = JSON.parse(chatGPTResponse);
+      if (responseJson.status === 'FAIL' || responseJson.issues.length > 0) {
+        core.setFailed("ChatGPT review failed with issues: " + JSON.stringify(responseJson.issues));
+        return;
+      }
+    }
+
+    core.setOutput("chatgpt_review", chatGPTResponse);
     core.info("ChatGPT review comment posted!");
   } catch (error) {
     core.setFailed(error.message);
@@ -191,6 +202,10 @@ async function run() {
 function setupInput(){
   if (!!core.getInput('custom_tech_stack')) {
     tags = JSON.parse(core.getInput('custom_tech_stack'));
+  }
+
+  if( !!core.getInput('strict_mode')) {
+    strictMode = core.getInput('strict_mode').toLowerCase() === 'true';
   }
 }
 

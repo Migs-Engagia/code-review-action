@@ -8,6 +8,15 @@ inputs:
     description: 'Custom tech stack as JSON String'
     required: false
     default: '{}'
+  strict_mode:
+    description: "Enable strict mode for code review"
+    required: false
+    default: 'false'
+outputs:
+  review_status:
+    description: "Review status from ChatGPT"
+  gpt-review:
+    description: "Review details from ChatGPT"
 runs:
   using: "node20" # Change this to node12, node16, or node20
   main: "dist/index.js"
