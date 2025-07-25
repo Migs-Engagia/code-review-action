@@ -4,6 +4,10 @@ inputs:
   chatgpt-api-key:
     required: true
     description: "ChatGPT API key"
+  custom_tech_stack:
+    description: 'Custom tech stack as JSON String'
+    required: false
+    default: '{}'
 runs:
   using: "node20" # Change this to node12, node16, or node20
   main: "dist/index.js"

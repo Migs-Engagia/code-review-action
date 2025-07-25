@@ -70434,6 +70434,7 @@ async function run() {
     const apiKey = core.getInput("chatgpt-api-key");
     const octokit = github.getOctokit(token);
     const context = github.context;
+    setupInput();
 
     if (context.eventName !== "pull_request") {
       core.setFailed("This action only runs on pull_request events.");
@@ -70574,6 +70575,12 @@ async function run() {
     core.info("ChatGPT review comment posted!");
   } catch (error) {
     core.setFailed(error.message);
+  }
+}
+
+function setupInput(){
+  if (!!core.getInput('custom_tech_stack')) {
+    tags = JSON.parse(core.getInput('custom_tech_stack'));
   }
 }
 
