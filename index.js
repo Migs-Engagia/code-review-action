@@ -10,7 +10,7 @@ let techStack = {
 async function callChatGPT(apiKey, content) {
   const fetch = (await import('node-fetch')).default;
   const body = {
-    model: "gpt-4o", 
+    model: "gpt-4o-mini", 
     messages: [
       {
         role: "user",
