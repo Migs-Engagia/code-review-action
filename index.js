@@ -2,17 +2,22 @@ const core = require('@actions/core');
 const github = require('@actions/github');
 const fetch = require('node-fetch');
 
+let techStack = {
+  language: "PHP 7.1 and Android Kotlin/Java",
+  framework: "Laravel 5.8 and Android SDK",
+}; //default configuration, can be overridden by user input
+
 async function callChatGPT(apiKey, content) {
   const fetch = (await import('node-fetch')).default;
   const body = {
-    model: "gpt-4o-mini",  // Use gpt-3.5 if you want a less expensive option
+    model: "gpt-4o", 
     messages: [
       {
         role: "user",
         content: content
       }
     ],
-    max_tokens: 1024
+    max_tokens: 100000, // Adjust as needed
   };
 
   const response = await fetch("https://api.openai.com/v1/chat/completions", {
@@ -96,9 +101,74 @@ async function run() {
       }
     });
 
-    const prompt = `You are a senior software engineer. 
-                  Please review the following code diff and provide suggestions or improvements:\n\n${diff}
-                  At the end of review, add a summary (either pass or fail), and list all affected files with issue`;
+    const prompt = {
+      role: "You are a senior software engineer.",
+      task: "Review the following code diff based on best practices.",
+      platform: "backend",
+      technology: techStack,
+      checklist: {
+        codeQuality: {
+          readabilityAndMaintainability: [
+            "Code follows the team's coding style and conventions.",
+            "Code is well-documented (e.g., inline comments, README).",
+            "Variable and function names are clear and descriptive.",
+            "No commented-out code unless intended for future use."
+          ],
+          codeStructure: [
+            "Code is logically organized and modular.",
+            "Functions and methods are not excessively long.",
+            "Indentation and whitespace are used effectively for readability."
+          ],
+          errorHandling: [
+            "Appropriate error-handling mechanisms are in place.",
+            "Error messages are clear, informative, and actionable."
+          ]
+        },
+        functionalityAndLogic: {
+          correctness: [
+            "Code meets the intended functionality and requirements.",
+            "No logical errors or unexpected behavior.",
+            "Edge cases and boundary conditions are handled appropriately."
+          ],
+          testCoverage: [
+            "Unit tests are provided for new or modified code.",
+            "Existing tests remain functional.",
+            "Tests cover a range of scenarios, including edge cases."
+          ]
+        },
+        performance: [
+          "Code is optimized where necessary.",
+          "Redundant or unnecessary computations are avoided.",
+          "Scalability considerations are taken into account."
+        ],
+        security: [
+          "Secure coding practices are followed.",
+          "User inputs are properly validated and sanitized.",
+          "Sensitive data is handled securely."
+        ],
+        documentation: [
+          "API documentation is updated (if applicable).",
+          "README or relevant documentation is up to date.",
+          "External dependencies and configurations are clearly documented."
+        ],
+        commentsAndSuggestions: [
+          "Constructive feedback is provided to the author.",
+          "Suggestions for improvement are clear and actionable.",
+          "Potential issues or concerns are flagged for discussion."
+        ],
+        overallApproval: [
+          "Approved – Meets all criteria and is ready to merge.",
+          "Approved with minor changes – Minor adjustments are needed.",
+          "Request for clarification – Additional context or explanation is required.",
+          "Changes required – Significant revisions are needed before approval.",
+          "Rejected – Does not meet quality standards and needs major rework."
+        ]
+      },
+      instruction: "After reviewing the diff, respond using the following JSON format: { status: 'PASS' or 'FAIL', issues: [...], suggestedImprovements: [...] }",
+      input: {
+        diff: $diff,
+      }
+    };
 
     const chatGPTResponse = await callChatGPT(apiKey, prompt);
 
@@ -107,7 +177,7 @@ async function run() {
       owner,
       repo,
       issue_number: pull_number,
-      body: `🧠 **ChatGPT Code Review**\n\n${chatGPTResponse}`
+      body: `🧠 **ChatGPT Code Review (Experimental) **\n\n${chatGPTResponse}`
     });
 
     core.info("ChatGPT review comment posted!");
