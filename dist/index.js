@@ -70558,32 +70558,47 @@ async function run() {
           "Rejected – Does not meet quality standards and needs major rework."
         ]
       },
-      instruction: "After reviewing the diff, respond using the following JSON format: { status: 'PASS' or 'FAIL', issues: [...], suggestedImprovements: [...] }",
+      instruction: `
+      After reviewing the diff, respond in the following format:
+
+      1. A GitHub-friendly Markdown summary with:
+        - ✅ Status (PASS or FAIL)
+        - 🛠️ Key issues (bullet points)
+        - 💡 Suggested improvements (bullet points)
+
+      2. Then below that, include raw JSON like:
+      \`\`\`json
+      {
+        "status": "PASS" or "FAIL",
+        "issues": [...],
+        "suggestedImprovements": [...]
+      }
+      \`\`\`
+      `,
       input: {
         diff: diff,
       }
     };
 
-    const chatGPTResponse = await callChatGPT(apiKey, JSON.stringify(prompt, null, 2));
+    const fullResponse = await callChatGPT(apiKey, JSON.stringify(prompt, null, 2));
 
-    // Post the response as a comment
+    // Extract JSON part from code block (optional, safer parsing)
+    const jsonMatch = fullResponse.match(/```json\n([\s\S]*?)\n```/);
+    const parsedJson = jsonMatch ? JSON.parse(jsonMatch[1]) : null;
+    
     await octokit.rest.issues.createComment({
       owner,
       repo,
       issue_number: pull_number,
-      body: `🧠 **ChatGPT Code Review (Experimental)**\n\n\n${chatGPTResponse}\n`
+      body: `🧠 **ChatGPT Code Review (Experimental)**\n\n${fullResponse}`
     });
+    
 
-    if(strictMode) {
-      // If strict mode is enabled, fail the action if ChatGPT suggests issues
-      const responseJson = JSON.parse(chatGPTResponse);
-      if (responseJson.status === 'FAIL' || responseJson.issues.length > 0) {
-        core.setFailed("ChatGPT review failed with issues: " + JSON.stringify(responseJson.issues));
-        return;
-      }
+    if (strictMode && parsedJson && parsedJson.status === 'FAIL') {
+      core.setFailed("ChatGPT review failed with issues: " + JSON.stringify(parsedJson.issues));
     }
 
-    core.setOutput("chatgpt_review", chatGPTResponse);
+    core.setOutput("chatgpt_review", JSON.stringify(parsedJson, null, 2));
     core.info("ChatGPT review comment posted!");
   } catch (error) {
     core.setFailed(error.message);
