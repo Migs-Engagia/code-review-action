@@ -172,7 +172,7 @@ async function run() {
       }
     };
 
-    const chatGPTResponse = await callChatGPT(apiKey, prompt);
+    const chatGPTResponse = await callChatGPT(apiKey, JSON.stringify(prompt, null, 2));
 
     // Post the response as a comment
     await octokit.rest.issues.createComment({
