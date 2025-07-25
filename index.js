@@ -4,7 +4,7 @@ const fetch = require('node-fetch');
 
 let techStack = {
   language: "PHP 7.1 and Android Kotlin/Java",
-  framework: "Laravel 5.8 and Android SDK",
+  framework: "CakePHP 3.3 and Android SDK",
 }; //default configuration, can be overridden by user input
 
 async function callChatGPT(apiKey, content) {
