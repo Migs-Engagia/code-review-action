@@ -70401,7 +70401,7 @@ let techStack = {
 async function callChatGPT(apiKey, content) {
   const fetch = (await Promise.resolve(/* import() */).then(__nccwpck_require__.bind(__nccwpck_require__, 5376))).default;
   const body = {
-    model: "gpt-4o-mini", 
+    model: "gpt-4o", 
     messages: [
       {
         role: "user",
