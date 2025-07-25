@@ -70401,14 +70401,14 @@ let techStack = {
 async function callChatGPT(apiKey, content) {
   const fetch = (await Promise.resolve(/* import() */).then(__nccwpck_require__.bind(__nccwpck_require__, 5376))).default;
   const body = {
-    model: "gpt-4o", 
+    model: "gpt-4o-mini", // Use the latest model available
     messages: [
       {
         role: "user",
         content: content
       }
     ],
-    max_tokens: 100000, // Adjust as needed
+    max_tokens: 4096, // Adjust as needed
   };
 
   const response = await fetch("https://api.openai.com/v1/chat/completions", {
